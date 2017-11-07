@@ -49,7 +49,7 @@ holdtime = 20
 ;queuename = daily,00:00:00
 
 [queue_log]
-database = asterisk
+database = asteriskcdrdb
 queue_table = queue_log
 cdr_table = cdr
 host = localhost
