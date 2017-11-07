@@ -17,7 +17,7 @@ from .config import QPanelConfig
 
 cfg = QPanelConfig()
 # Class queue_log Table
-queue_log = Table(cfg.get('queue_log', 'table_queue'), metadata,
+queue_log = Table(cfg.get('queue_log', 'queue_table'), metadata,
                   Column('time', DateTime, primary_key=True),
                   Column('callid', Text),
                   Column('queuename', Text),
@@ -31,7 +31,7 @@ queue_log = Table(cfg.get('queue_log', 'table_queue'), metadata,
                   Column('data5', Text))
 
 #cdr_log = Table(cfg.get('cdr_log', 'table_cdr'), metadata,
-cdr_log = Table(cfg.get('queue_log', 'table_cdr'), metadata,
+cdr_log = Table(cfg.get('queue_log', 'cdr_table'), metadata,
                 Column('cnum', Text),
                 Column('calldate', DateTime, primary_key=True),
                 Column('disposition', Text),
