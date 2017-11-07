@@ -30,7 +30,8 @@ queue_log = Table(cfg.get('queue_log', 'table'), metadata,
                   Column('data4', Text),
                   Column('data5', Text))
 
-cdr_log = Table('cdr', metadata,
+cdr_log = Table(cfg.get('cdr_log', 'table_cdr'), metadata,
+#cdr_log = Table('cdr', metadata,
                 Column('cnum', Text),
                 Column('calldate', DateTime, primary_key=True),
                 Column('disposition', Text),
