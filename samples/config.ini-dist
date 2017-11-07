@@ -50,8 +50,8 @@ holdtime = 20
 
 [queue_log]
 database = asterisk
-table = queue_log
-table_cdr = cdr
+queue_table = queue_log
+cdr_table = cdr
 host = localhost
 user = user
 password = changeme
