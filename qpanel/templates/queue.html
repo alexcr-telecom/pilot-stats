@@ -162,8 +162,7 @@
         $('#outgoing_month').html(data.outgoing.month.value + ' (' + data.outgoing.month.avg + ')');
         $('#av_wait').html(parseInt(data.data.Holdtime).toString().toMMSS());
         $('#av_time').html(parseInt(data.data.TalkTime).toString().toMMSS());
-        $('#sla_abandon').html("{percent}%".format({percent: Math.round(call_in_service_level * 100 / answers)}));
-//        $('#sla_abandon').html(data.sla.abandon.day + '% (' + data.sla.abandon.month + '%)');
+        $('#sla_abandon').html(data.sla.abandon.day + '% (' + data.sla.abandon.month + '%)');
         $('#sla_holdtime').html(data.sla.holdtime.day + '% (' + data.sla.holdtime.month + '%)');
         $('#calls_free').html(data.free);
         $('#calls_busy').html(data.busy)
