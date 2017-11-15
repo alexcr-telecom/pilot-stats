@@ -167,7 +167,6 @@ def parse_list_record(list):
         time = int(list[0])
         record['time'] = utils.dt(time)
     except:
-        print(list)
         pass
 
     i = 1

@@ -284,7 +284,8 @@ def queue_json(name=None):
     data = get_data_queues(name)
     backend.connection.flush()
     members = data['members']
-    calls_count = backend.connection.get_calls_count()
+    calls_count_month = backend.connection.get_calls_count(queue=name, period='month')
+    calls_count_day = backend.connection.get_calls_count(queue=name, period='day')
     busy, free, unavailable = backend.connection.get_members(members)
     context = {
         'name': name,
@@ -298,7 +299,8 @@ def queue_json(name=None):
             },
             'month': {
                 'value': backend.connection.get_answered_count(queue=name, period='month', holdtime=None),
-                'avg': backend.connection.get_answered_avg(queue=name, period='month')
+                'avg': backend.connection.get_answered_avg(queue=name, period='month'),
+                'all': backend.connection.get_answered_count(queue=name)
             },
         },
         # Пропущенные звонки
@@ -334,6 +336,8 @@ def queue_json(name=None):
 
         # Входящие звонки
         'internal': backend.connection.get_calls_queue_count(queues={name: data}, context=cfg.context_in),
+
+        # Исходящие звонки
         'trunk': backend.connection.get_calls_queue_count(queues={name: data}, context=cfg.context_out),
 
         # Время ожидания
@@ -342,12 +346,12 @@ def queue_json(name=None):
         # SLA
         'sla': {
             'abandon': {
-                'day': backend.connection.get_sla_abandon(name, period='day', count=calls_count),
-                'month': backend.connection.get_sla_abandon(name, period='month', count=calls_count)
+                'day': backend.connection.get_sla_abandon(name, period='day', count=calls_count_day),
+                'month': backend.connection.get_sla_abandon(name, period='month', count=calls_count_month)
             },
             'holdtime': {
-                'day': backend.connection.get_sla_answered(name, period='day', count=calls_count),
-                'month': backend.connection.get_sla_answered(name, period='month', count=calls_count)
+                'day': backend.connection.get_sla_answered(name, period='day', count=calls_count_day),
+                'month': backend.connection.get_sla_answered(name, period='month', count=calls_count_month)
             }
         }
     }
