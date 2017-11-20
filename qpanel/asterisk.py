@@ -461,7 +461,7 @@ class AsteriskAMI:
         period = day
         count = 100
         количество пропущенных звонков за день - 2
-        result 2 / 100 * 100 = 2%
+        result 100 - 2 / 100 * 100 = 98%
 
         :param queue: Название очереди
         :param period: day, month
@@ -469,7 +469,7 @@ class AsteriskAMI:
         :return: SLA для пропущенных звонков
         """
         try:
-            result = self.get_abandon_count(queue, period, False, False) / count * 100
+            result = 100 - self.get_abandon_count(queue, period, False, False) / count * 100
             return round(result)
         except ZeroDivisionError:
             return round(0)
@@ -480,7 +480,7 @@ class AsteriskAMI:
         period = day
         count = 100
         количество отвеченных звонков > holdtime за день - 2
-        result 2 / 100 * 100 = 2%
+        result 100 - 2 / 100 * 100 = 98%
 
         :param queue: Название очереди
         :param period: day, month
@@ -488,7 +488,7 @@ class AsteriskAMI:
         :return: SLA для отвеченных звонков
         """
         try:
-            result = self.get_abandon_count(queue, period, -self.config.holdtime, False) / count * 100
+            result = 100 - self.get_abandon_count(queue, period, -self.config.holdtime, False) / count * 100
             return round(result)
         except ZeroDivisionError:
             return 0
