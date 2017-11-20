@@ -12,7 +12,8 @@
     "jquery.nicescroll": "3.5.x",
     "jquery.scrollTo": "1.4.x",
     "jquery.gritter": "1.7.x",
-    "font-awesome": "4.4.x"
+    "font-awesome": "4.4.x",
+    "jq-timeTo": "https://github.com/Lexxus/jq-timeTo.git#^1.2.0"
   },
   "authors": [
     "Rodrigo Ramírez Norambuena <a@rodrigoramirez.com>"
@@ -34,4 +35,3 @@
     "tests"
   ]
 }
-
