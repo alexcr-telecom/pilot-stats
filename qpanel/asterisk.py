@@ -169,7 +169,7 @@ class AsteriskAMI:
         :return: Список каналов
         """
         # Возвращает self.core_channels если уже был вызван метод CoreShowChannels()
-        if self.core_channels is None:
+        if self.core_channels is not None:
             return self.core_channels
 
         # Вызывает и записывает метод CoreShowChannels в self.core_channels
@@ -215,12 +215,11 @@ class AsteriskAMI:
         except TypeError:
             return 0
 
-    def get_calls_queue(self, queues=None, context=None, members=[]):
+    def get_calls_queue(self, queues=None, context=None):
         """
 
         :param queues: очередь
         :param context: from-internal, from-trunk
-        :param members: список агентов
         :return: Список звонков в очереди
         """
 
@@ -230,18 +229,17 @@ class AsteriskAMI:
         if not calls:
             return []
 
+        members = []
         # Если есть очередь, то расширяем список агентов из очереди
         if queues:
             for key, value in queues.items():
-                members.extend([v['Name'] for i, v in value['members'].items()])
-
+                members.extend([self.parse_name(name) for name in value['members'].keys()])
         result = []
 
         # Если в списке агентов есть CallerIDNum канала, то добавляем в список результатов
         for call in calls:
             if self.get_channel_name(call.get('Channel')) in members:
                 result.append(call)
-
         return result
 
     def get_channel_name(self, channel):
