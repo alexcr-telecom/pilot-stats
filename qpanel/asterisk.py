@@ -467,8 +467,8 @@ class AsteriskAMI:
         :return: SLA для пропущенных звонков
         """
         try:
-            result = 100 - self.get_abandon_count(queue, period, False, False) / count * 100
-            return round(result)
+            result = self.get_abandon_count(queue, period, False, False) / count * 100
+            return 100 - round(result)
         except ZeroDivisionError:
             return round(0)
 
@@ -486,8 +486,8 @@ class AsteriskAMI:
         :return: SLA для отвеченных звонков
         """
         try:
-            result = 100 - self.get_abandon_count(queue, period, -self.config.holdtime, False) / count * 100
-            return round(result)
+            result = self.get_abandon_count(queue, period, -self.config.holdtime, False) / count * 100
+            return 100 - round(result)
         except ZeroDivisionError:
             return 0
 
