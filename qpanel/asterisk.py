@@ -211,7 +211,7 @@ class AsteriskAMI:
 
         # Длина списка полученных каналов делится на 2
         try:
-            return len(channel_list) / 2
+            return len(channel_list)
         except TypeError:
             return 0
 
