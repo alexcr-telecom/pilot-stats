@@ -24,6 +24,18 @@ a, a:hover, a:focus {
     text-decoration: none;
     outline: none;
 }
+
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.main-header h2 {
+    color: #000;
+    font-weight: bold;
+    font-family: Verdana, sans-serif;
+}
 ::selection {
 
     background: #68dff0;
