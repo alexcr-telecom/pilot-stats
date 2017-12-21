@@ -291,15 +291,18 @@ def queue_json(name=None):
         'name': name,
         'data': data,
 
-        # Отвеченные звонки
+        # Принятые звонки
         'answered': {
             'day': {
                 'value': backend.connection.get_answered_count(queue=name, period='day', holdtime=None),
-                'avg': backend.connection.get_answered_avg(queue=name, period='day')
+                # 'avg': backend.connection.get_answered_avg(queue=name, period='day', size=30)
+                'avg': backend.connection.get_answered_avg(queue=name, period='day', size=7)
             },
             'month': {
                 'value': backend.connection.get_answered_count(queue=name, period='month', holdtime=None),
-                'avg': backend.connection.get_answered_avg(queue=name, period='month'),
+                # 'avg': backend.connection.get_answered_avg(queue=name, period='month', size=3),
+                # 'avg': backend.connection.get_answered_avg(queue=name, period='month', size=6),
+                'avg': backend.connection.get_answered_avg(queue=name, period='month', size=12),
                 'all': backend.connection.get_answered_count(queue=name)
             },
         },
@@ -307,22 +310,28 @@ def queue_json(name=None):
         'abandon': {
             'day': {
                 'value': backend.connection.get_abandon_count(queue=name, period='day', holdtime=False),
-                'avg': backend.connection.get_abandon_avg(queue=name, period='day'),
+                # 'avg': backend.connection.get_abandon_avg(queue=name, period='day', size=30),
+                'avg': backend.connection.get_abandon_avg(queue=name, period='day', size=7),
             },
             'month': {
                 'value': backend.connection.get_abandon_count(queue=name, period='month', holdtime=False),
-                'avg': backend.connection.get_abandon_avg(queue=name, period='month')
+                # 'avg': backend.connection.get_abandon_avg(queue=name, period='month', size=3)
+                # 'avg': backend.connection.get_abandon_avg(queue=name, period='month', size=6)
+                'avg': backend.connection.get_abandon_avg(queue=name, period='month', size=12)
             }
         },
         # Исходящие звонки
         'outgoing': {
             'day': {
                 'value': backend.connection.get_outgoing_count(members, period='day'),
-                'avg': backend.connection.get_outgoing_avg(members, period='day')
+                # 'avg': backend.connection.get_outgoing_avg(members, period='day', size=30)
+                'avg': backend.connection.get_outgoing_avg(members, period='day', size=7)
             },
             'month': {
                 'value': backend.connection.get_outgoing_count(members, period='month'),
-                'avg': backend.connection.get_outgoing_avg(members, period='month')
+                # 'avg': backend.connection.get_outgoing_avg(members, period='month', size=3)
+                # 'avg': backend.connection.get_outgoing_avg(members, period='month', size=6)
+                'avg': backend.connection.get_outgoing_avg(members, period='month', size=12)
             }
         },
         # Количество занятых линий

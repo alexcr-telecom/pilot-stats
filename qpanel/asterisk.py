@@ -16,7 +16,7 @@ from Asterisk.Manager import *
 from qpanel.config import QPanelConfig
 from qpanel.model import get_cdr, queuelog_event_by_range_and_types, QueueLog
 
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 
 
 class ConnectionErrorAMI(Exception):
@@ -255,31 +255,32 @@ class AsteriskAMI:
         """
         return len(self.get_calls_queue(queues, context))
 
-    def get_day_period(self):
+    def get_day_period(self, days=1):
         """
 
         :return: период дня от 00.00.00 до 23.59.59
         """
-        start = datetime.combine(datetime.now(), time.min)
-        finish = datetime.combine(datetime.now(), time.max)
+        now = datetime.now()
+        start = datetime.combine(now, time.min) - timedelta(days=days-1)
+        finish = datetime.combine(now, time.max)
         return start, finish
 
-    def get_month_period(self):
+    def get_month_period(self, months=1):
         """
 
         :return: период всего месяца от 1 дня до 28/30/31
         """
         date = datetime.now()
-        start = datetime(date.year, date.month, 1)
+        start = datetime(date.year, date.month - months + 1, 1)
         finish = datetime.combine(
             datetime(date.year, date.month, calendar.monthrange(date.year, date.month)[1]),
             time.max
         )
         return start, finish
 
-    def get_period(self, period):
+    def get_period(self, period, size=1):
         try:
-            return getattr(self, 'get_%s_period' % period)()
+            return getattr(self, 'get_%s_period' % period)(size)
         except AttributeError:
             return None, None
 
@@ -300,7 +301,7 @@ class AsteriskAMI:
         # Получаем список объектов из методов
         # get_answered, get_abandon, get_outgoing
         try:
-            obj_list = getattr(self, 'get_%s' % event)(**kwargs)
+            obj_list = getattr(self, 'get_%s' % event)(period=period, **kwargs)
             if not obj_list:
                 return 0
 
@@ -336,9 +337,10 @@ class AsteriskAMI:
 
         return name
 
-    def get_outgoing(self, members, period=None):
+    def get_outgoing(self, members, period=None, period_size=1):
         """
         Исходящие звонки из таблицы CDR
+        :param period_size: размер периода
         :param members: список агентов
         :param period: day, month
         :return: Список исходящих звонков для members и period
@@ -353,7 +355,7 @@ class AsteriskAMI:
         }
 
         if period:
-            start, finish = self.get_period(period)
+            start, finish = self.get_period(period, size=period_size)
             data.update({
                 'start': start,
                 'finish': finish
@@ -361,15 +363,17 @@ class AsteriskAMI:
         self.outgoing[period] = get_cdr(**data)
         return self.outgoing[period]
 
-    def get_outgoing_avg(self, members, period):
-        return self.get_avg('outgoing', period, members=members)
+    def get_outgoing_avg(self, members, period, size):
+        return self.get_avg('outgoing', period, members=members, period_size=size)
 
     def get_outgoing_count(self, members, period):
         return len(self.get_outgoing(members, period))
 
-    def get_answered(self, queue=None, period=None, holdtime=config.holdtime, query=True):
+    def get_answered(self, queue=None, period=None, holdtime=config.holdtime, query=True, period_size=1):
         """
         Список отвеченных звонков из таблицы QueueLog
+        :param holdtime:
+        :param query:
         :param queue: Название очереди
         :param period: day, month
         :return: Список отвеченных звонков
@@ -380,7 +384,7 @@ class AsteriskAMI:
         events = ['CONNECT']
 
         # Получаем нужный нам период, начало и конец
-        start, finish = self.get_period(period)
+        start, finish = self.get_period(period, size=period_size)
 
         # Формируем запрос в базу данных для таблицы QueueLog
         query = queuelog_event_by_range_and_types(
@@ -405,10 +409,10 @@ class AsteriskAMI:
     def get_answered_count(self, queue=None, period=None, holdtime=config.holdtime):
         return len(self.get_answered(queue, period, holdtime))
 
-    def get_answered_avg(self, queue=None, period=None, holdtime=None, query=True):
-        return self.get_avg('answered', period, queue=queue, holdtime=holdtime, query=query)
+    def get_answered_avg(self, queue=None, period=None, holdtime=None, query=True, size=1):
+        return self.get_avg('answered', period, queue=queue, holdtime=holdtime, query=query, period_size=size)
 
-    def get_abandon(self, queue=None, period=None, holdtime=True, query=True, write=True):
+    def get_abandon(self, queue=None, period=None, holdtime=True, query=True, write=True, period_size=1):
         """
         Список пропущенных звонков из таблицы QueueLog
         :param query: Делать ли повторный запрос
@@ -420,7 +424,7 @@ class AsteriskAMI:
         if period in self.abandon and query:
             return self.abandon[period]
 
-        start, finish = self.get_period(period)
+        start, finish = self.get_period(period, size=period_size)
         events = ['ABANDON', 'EXITWITHTIMEOUT']
         # Формируем запрос в базу данных для таблицы QueueLog
         data = queuelog_event_by_range_and_types(
@@ -440,8 +444,8 @@ class AsteriskAMI:
     def get_abandon_count(self, queue=None, period=None, holdtime=True, query=True, write=True):
         return len(self.get_abandon(queue, period, holdtime, query, write))
 
-    def get_abandon_avg(self, queue=None, period=None):
-        return self.get_avg('abandon', period, queue=queue, holdtime=False)
+    def get_abandon_avg(self, queue=None, period=None, size=1):
+        return self.get_avg('abandon', period, queue=queue, holdtime=False, period_size=size)
 
     def get_calls_count(self, queue=None, period=None):
         """
